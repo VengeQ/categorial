@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 ///combine methods in semigroup return new semigroup with new value:
 ///* combine_owned(m1:Semigroup, m2:Semigroup) - m1 and m2 are owned by this method.
 ///* combine(m1:&Semigroup, m2:&Semigroup) - m1 and m2 are borrowed by this method.
@@ -64,5 +66,52 @@ pub trait Semigroup<A>  {
 pub trait Monoid<A> {
     fn combine_owned(x:Self,y:Self) ->Self;
     fn id() -> Self;
+}
+
+
+
+///I can't do this(
+trait Functor<A> {
+    fn map_to_value<B, F>(&self, f:F) -> B where F:Fn(A) -> B;
+
+}
+
+
+#[cfg(test)]
+mod test{
+    use std::fmt::Debug;
+    use crate::type_classes::Functor;
+
+    #[test]
+    fn func_test(){
+        use super::Functor;
+        #[derive(Debug, PartialEq, Clone)]
+        struct FunctorInstance<T> where T:Debug+Clone{
+            value:T
+        }
+        impl <T> FunctorInstance<T> where T:Debug+Clone{
+            pub fn new(value:T) ->Self {
+                FunctorInstance{value}
+            }
+            fn fmap<R, F>(&self,f: F) -> FunctorInstance<R> where F:Fn(T) -> R, R:Debug+Clone{
+                FunctorInstance::new(self.map_to_value(|s|f(s)))
+            }
+        }
+
+        impl<T> Functor<T> for FunctorInstance<T> where T:Debug+Clone{
+            fn map_to_value<R, F>(&self,f: F) -> R where F:Fn(T) -> R{
+                f(self.value.clone())
+            }
+        }
+
+
+        let f1 =FunctorInstance::new(23);
+        let f2 =FunctorInstance::new(f1.map_to_value(|x|(x*4).to_string()));
+        assert_eq!(f2, FunctorInstance::new("92".to_owned()));
+        let f3=FunctorInstance::new(23);
+        let f4= f3.fmap(|x| (x+12).to_string());
+        assert_eq!(f4, FunctorInstance::new("35".to_owned()));
+
+    }
 }
 

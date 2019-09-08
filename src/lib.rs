@@ -11,7 +11,6 @@
 //! * laws are function for asserting that custom type are fulfill laws of concrete type class
 
 
-
 pub mod type_classes;
 pub mod instances;
 pub mod laws;
