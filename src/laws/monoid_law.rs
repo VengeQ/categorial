@@ -1,6 +1,6 @@
 use crate::Monoid;
 
-///Get 3 instances of monoid and return true if Associativity and Identity rules was completed
+///Get 3 instances of monoid and return true, if Associativity and Identity rules was completed.<br />
 ///This monoid need to derive (PartialEq, Clone)
 /// ```
 /// use categorial::Monoid;
