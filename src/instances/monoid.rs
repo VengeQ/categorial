@@ -17,8 +17,10 @@ impl<A> MonoidInstance<A> where A: Add<Output=A> + Default {
 }
 
 /// Monoid have two methods:
-/// combine(m1:Monoid, m2:Monoid) - return new monoid.
-/// id() - return identity element for type A and combine operation.
+/// 1) combine - return new monoid with some operations. There are two variances in this crate
+/// combine_owned(m1:Monoid, m2:Monoid) - m1 and m2 are owned by this method.
+/// combine(m1:&Monoid, m2:&Monoid) - m1 and m2 are borrowed by this method.
+/// id() - return identity element for type A and combine_owned operation.
 /// MonoidInstance from categorial::instances::MonoidInstances constraint by deriving Default, because default value for type A returned as id().
 /// There are any value (not necessary Default for type A) in the custom implementation for monoid
 /// A simple example where id = 1 and associative operation is multiplication show below
@@ -29,7 +31,7 @@ impl<A> MonoidInstance<A> where A: Add<Output=A> + Default {
 ///        value:usize
 ///    }
 ///    impl Monoid<usize> for MonoidExample{
-///        fn combine(x: Self, y: Self) -> Self {
+///        fn combine_owned(x: Self, y: Self) -> Self {
 ///            MonoidExample{value:x.value*y.value}
 ///        }
 ///
@@ -40,12 +42,12 @@ impl<A> MonoidInstance<A> where A: Add<Output=A> + Default {
 ///    let x1 = MonoidExample { value: 12_usize };
 ///    let x2 = MonoidExample { value: 13_usize };
 ///
-///    assert_eq!(Monoid::combine(x1.clone(), x2), MonoidExample{ value: (12 * 13) as usize });
-///    assert_eq!(Monoid::combine(x1, Monoid::id()), MonoidExample{ value: (12 * 1) as usize });
+///    assert_eq!(Monoid::combine_owned(x1.clone(), x2), MonoidExample{ value: (12 * 13) as usize });
+///    assert_eq!(Monoid::combine_owned(x1, Monoid::id()), MonoidExample{ value: (12 * 1) as usize });
 /// ```
 ///
 impl<A> Monoid<A> for MonoidInstance<A> where A: Add<Output=A> + Default {
-    fn combine(x: Self, y: Self) -> Self {
+    fn combine_owned(x: Self, y: Self) -> Self {
         MonoidInstance { value: x.value + y.value }
     }
 
@@ -66,18 +68,18 @@ mod test {
     }
 
     #[test]
-    fn monoid_instance_combine_test() {
+    fn monoid_instance_combine_owned_test() {
         let m1 = MonoidInstance::new(12);
         let m2 = MonoidInstance::new(14);
-        assert_eq!(Monoid::combine(m1, m2), MonoidInstance::new(12 + 14));
+        assert_eq!(Monoid::combine_owned(m1, m2), MonoidInstance::new(12 + 14));
     }
 
     #[test]
     fn monoid_instance_id_test() {
         let m1 = MonoidInstance::new(12);
-        assert_eq!(Monoid::combine(m1, MonoidInstance::default()), MonoidInstance::new(12 + 0));
+        assert_eq!(Monoid::combine_owned(m1, MonoidInstance::default()), MonoidInstance::new(12 + 0));
         let m1 = MonoidInstance::new(11);
-        assert_eq!(Monoid::combine(MonoidInstance::default(), m1), MonoidInstance::new(0 + 11));
+        assert_eq!(Monoid::combine_owned(MonoidInstance::default(), m1), MonoidInstance::new(0 + 11));
     }
 
     ///Simple String monoid.
@@ -99,7 +101,7 @@ mod test {
 
     }
     impl Monoid<String> for StringMonoid {
-        fn combine(x: Self, y: Self) -> Self {
+        fn combine_owned(x: Self, y: Self) -> Self {
             StringMonoid::new(x.value.to_owned().add(&y.value))
         }
         fn id() -> Self {
@@ -108,19 +110,19 @@ mod test {
     }
 
     #[test]
-    fn string_monoid_combine_test() {
+    fn string_monoid_combine_owned_test() {
         let s1 = StringMonoid::from_slice("Hello");
         let s2 = StringMonoid::from_slice("World");
-        assert_eq!(StringMonoid::combine(s1,s2), StringMonoid::from_slice("HelloWorld"));
+        assert_eq!(StringMonoid::combine_owned(s1,s2), StringMonoid::from_slice("HelloWorld"));
 
     }
     #[test]
     fn string_monoid_id_test() {
         let s1 = StringMonoid::from_slice("Hello");
         let s2 = StringMonoid::from_slice("World");
-        assert_eq!(StringMonoid::combine(StringMonoid::id(),s1.clone()),
-                   StringMonoid::combine(s1.clone(),StringMonoid::id()));
-        assert_eq!(StringMonoid::combine(s2.clone(),StringMonoid::id()), s2);
+        assert_eq!(StringMonoid::combine_owned(StringMonoid::id(),s1.clone()),
+                   StringMonoid::combine_owned(s1.clone(),StringMonoid::id()));
+        assert_eq!(StringMonoid::combine_owned(s2.clone(),StringMonoid::id()), s2);
     }
 
     #[test]
@@ -128,7 +130,7 @@ mod test {
         let s1 = StringMonoid::from_slice("Hello ");
         let s2 = StringMonoid::from_slice("beautiful ");
         let s3 = StringMonoid::from_slice("world!");
-        assert_eq!(StringMonoid::combine(StringMonoid::combine(s1.clone(),s2.clone()),s3.clone()),
-                   StringMonoid::combine(s1.clone(),StringMonoid::combine(s2.clone(),s3.clone())));
+        assert_eq!(StringMonoid::combine_owned(StringMonoid::combine_owned(s1.clone(),s2.clone()),s3.clone()),
+                   StringMonoid::combine_owned(s1.clone(),StringMonoid::combine_owned(s2.clone(),s3.clone())));
     }
 }
