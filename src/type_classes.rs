@@ -1,6 +1,9 @@
-///combine_owned method in semigroup return new semigroup with new value.
+///combine methods in semigroup return new semigroup with new value:
+///* combine_owned(m1:Semigroup, m2:Semigroup) - m1 and m2 are owned by this method.
+///* combine(m1:&Semigroup, m2:&Semigroup) - m1 and m2 are borrowed by this method.
 ///
-///```
+///# Example
+/// ```
 /// use categorial::type_classes::Semigroup;
 /// #[derive(Debug, PartialEq)]
 ///       struct SemigroupExample{
@@ -27,14 +30,15 @@ pub trait Semigroup<A>  {
 
 /// Monoid have two methods:
 /// 1) combine - return new monoid with some operations. There are two variances in this crate.
-///     * combine_owned(m1:Monoid, m2:Monoid) - m1 and m2 are owned by this method.
-///     * combine(m1:&Monoid, m2:&Monoid) - m1 and m2 are borrowed by this method.
+///    * combine_owned(m1:Monoid, m2:Monoid) - m1 and m2 are owned by this method.
+///    * combine(m1:&Monoid, m2:&Monoid) - m1 and m2 are borrowed by this method.
 /// 2) id() - return identity element for type A and combine_owned operation.
 /// MonoidInstance from categorial::instances::MonoidInstances constraint by deriving Default, because default value for type A returned as id().
 ///
 /// There are any value (not necessary Default for type A) in the custom implementation for monoid
 ///
 /// A simple example where id = 1 and associative operation is multiplication show below
+/// # Example
 /// ```
 ///    use categorial::Monoid;
 ///    #[derive(Debug, PartialEq, Clone)]

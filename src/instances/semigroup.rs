@@ -16,7 +16,6 @@ impl<A> SemigroupInstance<A> where A: Add<Output=A> {
     }
 }
 
-
 impl<A> Semigroup<A> for SemigroupInstance<A> where A: Add<Output=A>+Clone {
     fn combine_owned(x: Self, y: Self) -> Self {
         SemigroupInstance { value: x.value.add(y.value) }
@@ -32,7 +31,6 @@ impl<A> Semigroup<A> for SemigroupInstance<A> where A: Add<Output=A>+Clone {
 mod test {
     use super::SemigroupInstance;
     use super::Semigroup;
-
 
     ///Default instance of semigroup test
     #[test]
