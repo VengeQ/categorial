@@ -35,10 +35,8 @@ pub fn is_monoid_law_complete<A: Monoid<T> + PartialEq + Clone, T>(m1: A, m2: A,
 
 #[cfg(test)]
 mod test {
-
     use crate::Monoid;
     use std::ops::Add;
-
 
 
     #[test]
@@ -49,18 +47,18 @@ mod test {
         }
         impl Monoid<String> for CorrectMonoid {
             fn combine_owned(x: Self, y: Self) -> Self {
-                CorrectMonoid{ value: x.value.clone().add(&y.value) }
+                CorrectMonoid { value: x.value.clone().add(&y.value) }
             }
             fn id() -> Self {
-                CorrectMonoid{ value: "".to_string() }
+                CorrectMonoid { value: "".to_string() }
             }
         }
 
-        let x1= CorrectMonoid{value:"hello".to_owned()};
-        let x2= CorrectMonoid{value:"beautiful".to_owned()};
-        let x3= CorrectMonoid{value:"world".to_owned()};
+        let x1 = CorrectMonoid { value: "hello".to_owned() };
+        let x2 = CorrectMonoid { value: "beautiful".to_owned() };
+        let x3 = CorrectMonoid { value: "world".to_owned() };
 
-        assert_eq!(super::is_monoid_law_complete(x1,x2,x3), true)
+        assert_eq!(super::is_monoid_law_complete(x1, x2, x3), true)
     }
 
     ///combine_owned function where `m * id = id * m = m` is not true
@@ -72,18 +70,18 @@ mod test {
         }
         impl Monoid<String> for IncorrectMonoid {
             fn combine_owned(x: Self, y: Self) -> Self {
-                IncorrectMonoid{ value: x.value.clone().add(&x.value).add(&y.value) }
+                IncorrectMonoid { value: x.value.clone().add(&x.value).add(&y.value) }
             }
             fn id() -> Self {
-                IncorrectMonoid{ value: "".to_string() }
+                IncorrectMonoid { value: "".to_string() }
             }
         }
 
-        let x1= IncorrectMonoid{value:"hello".to_owned()};
-        let x2= IncorrectMonoid{value:"beautiful".to_owned()};
-        let x3= IncorrectMonoid{value:"world".to_owned()};
+        let x1 = IncorrectMonoid { value: "hello".to_owned() };
+        let x2 = IncorrectMonoid { value: "beautiful".to_owned() };
+        let x3 = IncorrectMonoid { value: "world".to_owned() };
 
-        assert_eq!(super::is_monoid_law_complete(x1,x2,x3), false)
+        assert_eq!(super::is_monoid_law_complete(x1, x2, x3), false)
     }
 }
 

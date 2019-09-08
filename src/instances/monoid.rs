@@ -1,13 +1,15 @@
 use std::ops::Add;
 use crate::Monoid;
+use std::fmt::Debug;
 
 #[derive(Debug, PartialOrd, PartialEq, Default)]
-pub struct MonoidInstance<A> where A: Add<Output=A> + Default {
+pub struct MonoidInstance<A> where A: Add<Output=A> + Default{
     value: A
 }
 
-/// Return reference, because MonoidInstance doesn't constraint by deriving (Copy, Clone)
+///Simple implementation with value and new method.
 impl<A> MonoidInstance<A> where A: Add<Output=A> + Default {
+    /// Return reference, because MonoidInstance doesn't constraint by deriving (Copy, Clone)
     pub fn value(&self) -> &A {
         &self.value
     }
@@ -16,12 +18,11 @@ impl<A> MonoidInstance<A> where A: Add<Output=A> + Default {
     }
 }
 
-
+///Simple implementation with sum function as associative operation.
 impl<A> Monoid<A> for MonoidInstance<A> where A: Add<Output=A> + Default {
     fn combine_owned(x: Self, y: Self) -> Self {
         MonoidInstance { value: x.value + y.value }
     }
-
     fn id() -> Self {
         MonoidInstance::default()
     }
