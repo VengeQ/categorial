@@ -10,6 +10,10 @@
 ///            fn combine_owned(x: Self, y: Self) -> Self {
 ///                SemigroupExample{value:x.value+y.value}
 ///            }
+///
+///            fn combine(x: &Self,y: &Self) -> Self {
+///                  SemigroupExample{value:x.value+y.value}
+///             }
 ///       }
 ///       let x1 = SemigroupExample { value: 12_usize };
 ///       let x2 = SemigroupExample { value: 13_usize };
@@ -18,14 +22,14 @@
 ///
 pub trait Semigroup<A>  {
     fn combine_owned(x:Self,y:Self) ->Self;
+    fn combine(x:&Self, y:&Self) -> Self;
 }
 
 /// Monoid have two methods:
 /// 1) combine - return new monoid with some operations. There are two variances in this crate.
-/// * combine_owned(m1:Monoid, m2:Monoid) - m1 and m2 are owned by this method.
-///
-/// * combine(m1:&Monoid, m2:&Monoid) - m1 and m2 are borrowed by this method.
-/// 2) * id() - return identity element for type A and combine_owned operation.
+///     * combine_owned(m1:Monoid, m2:Monoid) - m1 and m2 are owned by this method.
+///     * combine(m1:&Monoid, m2:&Monoid) - m1 and m2 are borrowed by this method.
+/// 2) id() - return identity element for type A and combine_owned operation.
 /// MonoidInstance from categorial::instances::MonoidInstances constraint by deriving Default, because default value for type A returned as id().
 ///
 /// There are any value (not necessary Default for type A) in the custom implementation for monoid

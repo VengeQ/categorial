@@ -17,11 +17,16 @@ impl<A> SemigroupInstance<A> where A: Add<Output=A> {
 }
 
 
-impl<A> Semigroup<A> for SemigroupInstance<A> where A: Add<Output=A> {
+impl<A> Semigroup<A> for SemigroupInstance<A> where A: Add<Output=A>+Clone {
     fn combine_owned(x: Self, y: Self) -> Self {
         SemigroupInstance { value: x.value.add(y.value) }
     }
+
+    fn combine(x: &Self, y: &Self) -> Self {
+        SemigroupInstance { value: x.value.clone().add(y.value.clone()) }
+    }
 }
+
 
 #[cfg(test)]
 mod test {
@@ -45,6 +50,10 @@ mod test {
         impl Semigroup<usize> for SemigroupExample {
             fn combine_owned(x: Self, y: Self) -> Self {
                 SemigroupExample { value: x.value * y.value }
+            }
+
+            fn combine(x: &Self, y: &Self) -> Self {
+                SemigroupExample{value:x.value+y.value}
             }
         }
         let x1 = SemigroupExample { value: 12_usize };
