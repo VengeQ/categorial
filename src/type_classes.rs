@@ -25,9 +25,9 @@ use std::fmt::Debug;
 ///       assert_eq!(Semigroup::combine_owned(x1, x2), SemigroupExample{ value: (12 + 13) as usize });
 ///```
 ///
-pub trait Semigroup<A>  {
-    fn combine_owned(x:Self,y:Self) ->Self;
-    fn combine(x:&Self, y:&Self) -> Self;
+pub trait Semigroup<A> {
+    fn combine_owned(x: Self, y: Self) -> Self;
+    fn combine(x: &Self, y: &Self) -> Self;
 }
 
 /// Monoid have two methods:
@@ -64,54 +64,59 @@ pub trait Semigroup<A>  {
 /// ```
 ///
 pub trait Monoid<A> {
-    fn combine_owned(x:Self,y:Self) ->Self;
+    fn combine_owned(x: Self, y: Self) -> Self;
     fn id() -> Self;
 }
 
 
 
+use std::iter::Map;
+
 ///I can't do this(
 trait Functor<A> {
-    fn map_to_value<B, F>(&self, f:F) -> B where F:Fn(A) -> B;
-
+    fn map_to_value<B, F>(&self, f: F) -> B where F: Fn(A) -> B;
+    fn from_value(x:A) -> Self;
 }
 
 
 #[cfg(test)]
-mod test{
+mod test {
     use std::fmt::Debug;
     use crate::type_classes::Functor;
 
     #[test]
-    fn func_test(){
+    fn func_test() {
         use super::Functor;
         #[derive(Debug, PartialEq, Clone)]
-        struct FunctorInstance<T> where T:Debug+Clone{
-            value:T
+        struct FunctorInstance<T> where T: Debug + Clone {
+            value: T
         }
-        impl <T> FunctorInstance<T> where T:Debug+Clone{
-            pub fn new(value:T) ->Self {
-                FunctorInstance{value}
+        impl<T> FunctorInstance<T> where T: Debug + Clone {
+            pub fn new(value: T) -> Self {
+                FunctorInstance { value }
             }
-            fn fmap<R, F>(&self,f: F) -> FunctorInstance<R> where F:Fn(T) -> R, R:Debug+Clone{
-                FunctorInstance::new(self.map_to_value(|s|f(s)))
+            fn fmap<R, F>(&self, f: F) -> FunctorInstance<R> where F: Fn(T) -> R, R: Debug + Clone {
+                FunctorInstance::new(self.map_to_value(|s| f(s)))
             }
         }
 
-        impl<T> Functor<T> for FunctorInstance<T> where T:Debug+Clone{
-            fn map_to_value<R, F>(&self,f: F) -> R where F:Fn(T) -> R{
+        impl<T> Functor<T> for FunctorInstance<T> where T: Debug + Clone {
+            fn map_to_value<R, F>(&self, f: F) -> R where F: Fn(T) -> R {
                 f(self.value.clone())
             }
+
+            fn from_value(x: T) -> Self {
+                FunctorInstance{value:x}
+            }
         }
 
 
-        let f1 =FunctorInstance::new(23);
-        let f2 =FunctorInstance::new(f1.map_to_value(|x|(x*4).to_string()));
+        let f1 = FunctorInstance::new(23);
+        let f2:FunctorInstance<String> = Functor::from_value(f1.map_to_value(|x| (x * 4).to_string()));
         assert_eq!(f2, FunctorInstance::new("92".to_owned()));
-        let f3=FunctorInstance::new(23);
-        let f4= f3.fmap(|x| (x+12).to_string());
+        let f3 = FunctorInstance::new(23);
+        let f4 = f3.fmap(|x| (x + 12).to_string());
         assert_eq!(f4, FunctorInstance::new("35".to_owned()));
-
     }
 }
 
