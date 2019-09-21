@@ -68,55 +68,39 @@ pub trait Monoid<A> {
     fn id() -> Self;
 }
 
+pub trait Gen {
+    type Typet;
+}
 
+pub trait NewGen<T>:Gen {
+    type Type;
+}
 
-use std::iter::Map;
 
 ///I can't do this(
-trait Functor<A> {
-    fn map_to_value<B, F>(&self, f: F) -> B where F: Fn(A) -> B;
-    fn from_value(x:A) -> Self;
+pub trait Functor: Gen {
+    //fn map_to_value<B, F>(&self, f: F) -> B where F: Fn(A) -> B;
+    fn fmap<R, F: Fn(Self::Type) -> R>(&self, f: F) -> Self::Type
+        where Self: NewGen<R>;
 }
 
 
 #[cfg(test)]
 mod test {
     use std::fmt::Debug;
-    use crate::type_classes::Functor;
+    use crate::type_classes::{Functor,};
+
+    struct FunctorVec<T>{
+        value: Vec<T>
+    }
 
     #[test]
     fn func_test() {
         use super::Functor;
         #[derive(Debug, PartialEq, Clone)]
-        struct FunctorInstance<T> where T: Debug + Clone {
-            value: T
+        struct FunctorInstance {
+            value: String
         }
-        impl<T> FunctorInstance<T> where T: Debug + Clone {
-            pub fn new(value: T) -> Self {
-                FunctorInstance { value }
-            }
-            fn fmap<R, F>(&self, f: F) -> FunctorInstance<R> where F: Fn(T) -> R, R: Debug + Clone {
-                FunctorInstance::new(self.map_to_value(|s| f(s)))
-            }
-        }
-
-        impl<T> Functor<T> for FunctorInstance<T> where T: Debug + Clone {
-            fn map_to_value<R, F>(&self, f: F) -> R where F: Fn(T) -> R {
-                f(self.value.clone())
-            }
-
-            fn from_value(x: T) -> Self {
-                FunctorInstance{value:x}
-            }
-        }
-
-
-        let f1 = FunctorInstance::new(23);
-        let f2:FunctorInstance<String> = Functor::from_value(f1.map_to_value(|x| (x * 4).to_string()));
-        assert_eq!(f2, FunctorInstance::new("92".to_owned()));
-        let f3 = FunctorInstance::new(23);
-        let f4 = f3.fmap(|x| (x + 12).to_string());
-        assert_eq!(f4, FunctorInstance::new("35".to_owned()));
     }
 }
 
